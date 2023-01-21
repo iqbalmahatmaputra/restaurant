@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
+    />
+    <title>Showing the map</title>
+    <!-- CSS only -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+      crossorigin="anonymous"
+    />
+    <!-- Mapbox library imports -->
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
+
+    <script src=" https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- JavaScript Bundle with Popper -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+      crossorigin="anonymous"
+    ></script>
+
+    <style>
+      #map {
+        width: 100%;
+        height: 500px;
+      }
+    </style>
+
+    <script>
+      let markers = [];
+      let popups = [];
+      let map;
+      $(document).ready(function () {
+        mapboxgl.accessToken =
+          "pk.eyJ1IjoiaXFiYWxtcDk2IiwiYSI6ImNsYWtvdnA4MjAxN24zd3BvN2F5aGVqYm0ifQ.MaGNKKn_z7wTdRzvQmK-rg"; // private access token
+          map = new mapboxgl.Map({
+          container: "map", // container ID
+          center: [-122.420679, 37.772537], // starting position [lng, lat]
+          zoom: 13, // starting zoom
+          style: "mapbox://styles/mapbox/streets-v11", // style URL or style object
+          hash: true, // sync `center`, `zoom`, `pitch`, and `bearing` with URL
+          // Use `transformRequest` to modify requests that begin with `http://myHost`.
+          transformRequest: (url, resourceType) => {
+            if (resourceType === "Source" && url.startsWith("http://myHost")) {
+              return {
+                url: url.replace("http", "https"),
+                headers: { "my-custom-header": true },
+                credentials: "include", // Include cookies for cross-origin requests
+              };
+            }
+          },
+        });
+        const nav = new mapboxgl.NavigationControl({
+          visualizePitch: true,
+        });
+        map.addControl(nav, "bottom-right");
+      });
+        function get_random_position() {
+          let sign1 = Math.random() > 0.5 ? -1 : 1; // batasan
+          let sign2 = Math.random() > 0.5 ? -1 : 1; // batasan
+        
+          return [
+          -122.420679 + sign1 * Math.random(),
+          37.772537 + sign2 * Math.random(),
+          ]
+        }
+        function add_random(){
+          const point = get_random_position();
+          const marker = new mapboxgl.Marker()
+          .setLngLat(point)
+          .addTo(map);
+          markers.push(marker);
+
+        const popup = new mapboxgl.Popup({
+          offset: {
+            bottom: [0, -35],
+          },
+        })
+          .setLngLat(point)
+          .setHTML("<h1>SMK Kesesi</h1>")
+          .setMaxWidth("400px")
+          .addTo(map);
+          popups.push(popup);
+        }
+        function delete_data(){
+          for (let i = 0; i< markers.length; i++) {
+            markers[i].remove();
+          }
+          for (let i = 0; i< popups.length; i++) {
+            popups[i].remove();
+          }
+        }
+      
+      
+    </script>
+  </head>
+  <body>
+    <div id="map"></div>
+    <button class="btn btn-success" onclick="add_random()">Add Random</button>
+    <button class="btn btn-danger" onclick="delete_data()">Delete Data</button>
+  </body>
+</html>
